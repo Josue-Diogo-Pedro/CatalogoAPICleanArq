@@ -11,6 +11,16 @@ public sealed class Produto : Entity
     public int Estoque { get; private set; }
     public DateTime DataCadastro { get; private set; }
 
+    public Produto(string nome, string descricao, decimal preco, string imagemUrl,
+        int estoque, DateTime dataCadastro) => ValidateDomain(nome, descricao, preco, imagemUrl, estoque, dataCadastro);
+
+    public void Update(string nome, string descricao, decimal preco, string imagemUrl,
+        int estoque, DateTime dataCadastro, int categoriaId)
+    {
+        ValidateDomain(nome, descricao, preco, imagemUrl, estoque, dataCadastro);
+        CategoriaId = categoriaId;
+    }
+
     private void ValidateDomain(string nome, string descricao, decimal preco, string imagemUrl,
         int estoque, DateTime dataCadastro)
     {
@@ -33,4 +43,7 @@ public sealed class Produto : Entity
         Estoque = estoque;
         DataCadastro = dataCadastro;
     }
+
+    public int CategoriaId { get; set; }
+    public Categoria Categoria { get; set; }
 }
