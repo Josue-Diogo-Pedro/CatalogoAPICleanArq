@@ -35,10 +35,10 @@ public class CategoriasController : ControllerBase
 
         await _categoriaService.AddAsync(categoriaDTO);
 
-        return new CreatedAtRouteResult("GetCategoria", new { id = categoriaDTO.Id });
+        return new CreatedAtRouteResult("GetCategoria", new { id = categoriaDTO.Id }, categoriaDTO);
     }
 
-    [HttpPut("id")]
+    [HttpPut("{id}")]
     public async Task<ActionResult> Put(int id, [FromBody]CategoriaDTO categoriaDTO)
     {
         if(!ModelState.IsValid) return BadRequest(ModelState);
@@ -49,7 +49,7 @@ public class CategoriasController : ControllerBase
         return Ok(categoriaDTO);
     }
 
-    [HttpDelete("id")]
+    [HttpDelete("{id}")]
     public async Task<ActionResult<Categoria>> Delete(int id)
     {
         var categoriaDTO = await _categoriaService.GetByIdAsync(id);
