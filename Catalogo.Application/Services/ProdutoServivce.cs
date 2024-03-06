@@ -1,34 +1,50 @@
-﻿using Catalogo.Application.DTOs;
+﻿using AutoMapper;
+using Catalogo.Application.DTOs;
 using Catalogo.Application.Interfaces;
+using Catalogo.Domain.Entities;
+using Catalogo.Domain.Interfaces;
 
 namespace Catalogo.Application.Services;
 
 public class ProdutoServivce : IProdutoService
 {
+    private IProdutoRepository _produtoRepository;
+    private readonly IMapper _mapper;
 
-    public Task<IEnumerable<ProdutoDTO>> GetProdutoDTOsAsync()
+    public ProdutoServivce(IMapper mapper, IProdutoRepository produtoRepository)
     {
-        throw new NotImplementedException();
+        _produtoRepository = produtoRepository ?? throw new ArgumentException(nameof(produtoRepository));
+        _mapper = mapper;
     }
 
-    public Task<ProdutoDTO> GetByIdAsync(int? id)
+    public async Task<IEnumerable<ProdutoDTO>> GetProdutoDTOsAsync()
     {
-        throw new NotImplementedException();
+        var produtosEntities = await _produtoRepository.GetProdutosAsync();
+        return _mapper.Map<IEnumerable<ProdutoDTO>>(produtosEntities);
     }
 
-    public Task AddAsync(ProdutoDTO produtoDTO)
+    public async Task<ProdutoDTO> GetByIdAsync(int? id)
     {
-        throw new NotImplementedException();
+        var produtoEntity = await _produtoRepository.GetByIdAsync(id);
+        return _mapper.Map<ProdutoDTO>(produtoEntity);
     }
 
-    public Task UpdateAsync(ProdutoDTO produtoDTO)
+    public async Task AddAsync(ProdutoDTO produtoDTO)
     {
-        throw new NotImplementedException();
+        var produtoEntity = _mapper.Map<Produto>(produtoDTO);
+        await _produtoRepository.CreateAsync(produtoEntity);
     }
 
-    public Task RemoveAsync(int? id)
+    public async Task UpdateAsync(ProdutoDTO produtoDTO)
     {
-        throw new NotImplementedException();
+        var produtoEntity = _mapper.Map<Produto>(produtoDTO);
+        await _produtoRepository.UpdateAsync(produtoEntity);
+    }
+
+    public async Task RemoveAsync(int? id)
+    {
+        var produtoEntity = await _produtoRepository.GetByIdAsync(id);
+        await _produtoRepository.RemoveAsync(produtoEntity);
     }
 
 }
