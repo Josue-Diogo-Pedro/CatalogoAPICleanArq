@@ -1,32 +1,47 @@
 ﻿using Catalogo.Domain.Entities;
 using Catalogo.Domain.Interfaces;
+using Catalogo.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalogo.Infrastructure.Repositories;
 
 public class ProdutoRepository : IProdutoRepository
 {
-    public Task<Produto> CreateAsync(Produto produto)
+    private ApplicationDbContext _context;
+    public ProdutoRepository(ApplicationDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
 
-    public Task<Produto> GetByIdAsync(int? id)
+    public async Task<IEnumerable<Produto>> GetProdutosAsync()
+        => await _context.Produtos.AsNoTracking().DefaultIfEmpty().ToListAsync();
+
+    public async Task<Produto> GetByIdAsync(int? id)
+        => await _context.Produtos
+        .AsNoTracking()
+        .DefaultIfEmpty()
+        .Include(c => c.Categoria)
+        .SingleOrDefaultAsync(p => p.Id == id); 
+
+    public async Task<Produto> CreateAsync(Produto produto)
     {
-        throw new NotImplementedException();
+        _context.Produtos.Add(produto);
+        await _context.SaveChangesAsync();
+        return produto;
     }
 
-    public Task<IEnumerable<Produto>> GetProdutosAsync()
+    public async Task<Produto> UpdateAsync(Produto produto)
     {
-        throw new NotImplementedException();
+        _context.Produtos.Update(produto);
+        await _context.SaveChangesAsync();
+        return produto;
     }
 
-    public Task<Produto> RemoveAsync(Produto produto)
+    public async Task<Produto> RemoveAsync(Produto produto)
     {
-        throw new NotImplementedException();
+        _context.Produtos.Remove(produto);
+        await _context.SaveChangesAsync();
+        return produto;
     }
 
-    public Task<Produto> UpdateAsync(Produto produto)
-    {
-        throw new NotImplementedException();
-    }
 }
