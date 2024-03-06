@@ -1,32 +1,49 @@
-﻿using Catalogo.Application.DTOs;
+﻿using AutoMapper;
+using Catalogo.Application.DTOs;
 using Catalogo.Application.Interfaces;
+using Catalogo.Domain.Entities;
+using Catalogo.Domain.Interfaces;
 
 namespace Catalogo.Application.Services;
 
 public class CategoriaService : ICategoriaService
 {
-    public Task<IEnumerable<CategoriaDTO>> GetCategoriaDTOsAsync()
+    private ICategoriaRepository _categoriaRepository;
+    private readonly IMapper _mapper;
+
+    public CategoriaService(ICategoriaRepository categoriaRepository, IMapper mapper)
     {
-        throw new NotImplementedException();
+        _categoriaRepository = categoriaRepository;
+        _mapper = mapper;
     }
 
-    public Task<CategoriaDTO> GetByIdAsync(int? id)
+    public async Task<IEnumerable<CategoriaDTO>> GetCategoriaDTOsAsync()
     {
-        throw new NotImplementedException();
+        var categoriesEntity = await _categoriaRepository.GetCategoriasAsync();
+        return _mapper.Map<IEnumerable<CategoriaDTO>>(categoriesEntity);
     }
 
-    public Task AddAsync(CategoriaDTO categoriaDTO)
+    public async Task<CategoriaDTO> GetByIdAsync(int? id)
     {
-        throw new NotImplementedException();
+        var categoryEntity = await _categoriaRepository.GetByIdAsync(id);
+        return _mapper.Map<CategoriaDTO>(categoryEntity);
     }
 
-    public Task UpdateAsync(CategoriaDTO categoriaDTO)
+    public async Task AddAsync(CategoriaDTO categoriaDTO)
     {
-        throw new NotImplementedException();
+        var categoryEntity = _mapper.Map<Categoria>(categoriaDTO);
+        await _categoriaRepository.CreateAsync(categoryEntity);
     }
 
-    public Task RemoveAsync(int? id)
+    public async Task UpdateAsync(CategoriaDTO categoriaDTO)
     {
-        throw new NotImplementedException();
+        var categoryEntity = _mapper.Map<Categoria>(categoriaDTO);
+        await _categoriaRepository.UpdateAsync(categoryEntity);
+    }
+
+    public async Task RemoveAsync(int? id)
+    {
+        var categoryEntity = await _categoriaRepository.GetByIdAsync(id);
+        await _categoriaRepository.RemoveAsync(categoryEntity);
     }
 }
