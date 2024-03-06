@@ -8,6 +8,15 @@ public sealed class Categoria : Entity
     public string ImagemUrl { get; private set; }
     public ICollection<Produto> Produtos { get; set; }
 
+    public Categoria(string nome, string imagemUrl) => ValidateDomain(nome, imagemUrl);
+
+    public Categoria(int id, string nome, string imagemUrl)
+    {
+        DomainExceptionValidation.When(id < 0, "O valor de Id inválido.");
+        Id = id;
+        ValidateDomain(nome, imagemUrl);
+    }
+
     private void ValidateDomain(string nome, string imagemUrl)
     {
         DomainExceptionValidation.When(string.IsNullOrEmpty(nome), "Nome inválido. O nome é obrigatório");
